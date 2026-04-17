@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Atomic Habits 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #07080f; color: #dde0f5; font-family: 'Syne', sans-serif; min-height: 100vh; }
+  button { cursor: pointer; font-family: inherit; border: none; background: none; }
+  input { font-family: 'Syne', sans-serif; }
+  input::placeholder { color: #252545; }
+  input:focus { outline: none; border-color: #252a50 !important; }
+  ::-webkit-scrollbar { width: 3px; height: 3px; background: #07080f; }
+  ::-webkit-scrollbar-thumb { background: #1e1f38; border-radius: 2px; }
+
+  #app { max-width: 480px; margin: 0 auto; padding-bottom: 48px; }
+
+  /* Header */
+  .hdr { padding: 26px 20px 16px; border-bottom: 1px solid #14152a; }
+  .hdr-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .hdr-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 3px; color: #4a4b72; margin-bottom: 5px; text-transform: uppercase; }
+  .hdr-title { font-size: 19px; font-weight: 800; color: #eef0ff; letter-spacing: -0.3px; line-height: 1.1; }
+  .hdr-right { display: flex; gap: 6px; align-items: flex-start; margin-top: 2px; }
+  .streak-num { font-size: 32px; font-weight: 800; font-family: 'DM Mono', monospace; line-height: 1; }
+  .streak-lbl { font-size: 8px; font-family: 'DM Mono', monospace; color: #32334e; letter-spacing: 2px; margin-top: 3px; }
+  .icon-btn { width: 30px; height: 30px; border-radius: 7px; background: #0d0e1b; border: 1px solid #14152a !important; color: #4a4b72; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+
+  /* Week strip */
+  .week-strip { margin-top: 16px; }
+  .week-days { display: flex; gap: 3px; }
+  .week-day { flex: 1; }
+  .wd-label { font-size: 8px; font-family: 'DM Mono', monospace; letter-spacing: 1px; text-align: center; margin-bottom: 3px; }
+  .wd-bar { height: 26px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; border: 1px solid transparent; }
+  .wd-tick { font-size: 9px; color: rgba(255,255,255,0.55); font-family: 'DM Mono', monospace; }
+  .week-status { margin-top: 6px; font-family: 'DM Mono', monospace; font-size: 9px; color: #2a2b45; letter-spacing: 1px; }
+
+  /* Tabs */
+  .tabs { display: flex; border-bottom: 1px solid #14152a; padding: 0 20px; }
+  .tab-btn { padding: 10px 16px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #252545; border-bottom: 2px solid transparent; transition: color 0.15s; }
+  .tab-btn.active { color: #8899ee; border-bottom-color: #3d5ce0; }
+
+  /* Today tab */
+  .tab-panel { padding: 18px 20px; display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Date nav */
+  .date-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .nav-btn { width: 32px; height: 32px; border-radius: 7px; background: #0d0e1b; border: 1px solid #14152a !important; color: #4a4b72; font-size: 18px; line-height: 1; }
+  .date-label { font-size: 9px; font-family: 'DM Mono', monospace; color: #4a4b72; letter-spacing: 2px; margin-bottom: 2px; text-align: center; }
+  .date-full { font-size: 17px; font-weight: 700; color: #eef0ff; text-align: center; }
+
+  /* Score bar */
+  .score-bar { background: #0d0e1b; border: 1px solid #14152a; border-radius: 10px; padding: 13px 15px; margin-bottom: 20px; }
+  .score-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
+  .score-lbl { font-family: 'DM Mono', monospace; font-size: 9px; color: #4a4b72; letter-spacing: 2px; }
+  .score-num { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 22px; }
+  .score-den { font-size: 11px; color: #252545; }
+  .bar-track { height: 3px; background: #0e0f20; border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; transition: width 0.35s ease; }
+  .score-msg { margin-top: 7px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; }
+
+  /* Categories */
+  .cat-block { margin-bottom: 16px; }
+  .cat-header { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; }
+  .cat-icon { font-size: 12px; }
+  .cat-name { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: #8890c8; text-transform: uppercase; font-weight: 500; }
+  .cat-sub { font-family: 'DM Mono', monospace; font-size: 8px; color: #1e1f35; letter-spacing: 1px; }
+  .habit-list { display: flex; flex-direction: column; gap: 5px; }
+  .habit-row { display: flex; align-items: center; gap: 12px; padding: 12px 13px; border-radius: 9px; cursor: pointer; border: 1px solid #14152a; background: #0d0e1b; transition: filter 0.15s; user-select: none; }
+  .habit-row:hover { filter: brightness(1.15); }
+  .habit-row.on-core { background: #05140e; border-color: #18302a; }
+  .habit-row.on-bonus { background: #051412; border-color: #183030; }
+  .habit-cb { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; background: transparent; border: 1.5px solid #242440; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .habit-cb.on-core { background: #16a34a; border-color: #16a34a; }
+  .habit-cb.on-bonus { background: #0d9488; border-color: #0d9488; }
+  .habit-cb-tick { font-size: 10px; color: #fff; font-weight: 700; line-height: 1; display: none; }
+  .habit-cb.on-core .habit-cb-tick, .habit-cb.on-bonus .habit-cb-tick { display: block; }
+  .habit-label { font-size: 13px; font-weight: 500; line-height: 1.3; color: #7880b8; }
+  .habit-label.on-core { color: #6aaf7a; }
+  .habit-label.on-bonus { color: #5fbfb8; }
+
+  .rule-bar { margin-top: 8px; padding: 9px; background: #09091a; border: 1px solid #10112a; border-radius: 7px; font-family: 'DM Mono', monospace; font-size: 9px; color: #20213a; letter-spacing: 2px; text-align: center; text-transform: uppercase; }
+
+  /* Year tab */
+  .year-title { font-family: 'DM Mono', monospace; font-size: 9px; color: #4a4b72; letter-spacing: 2px; margin-bottom: 14px; text-transform: uppercase; }
+  .legend { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.07); }
+  .legend-lbl { font-family: 'DM Mono', monospace; font-size: 8px; color: #4a4b72; letter-spacing: 0.5px; }
+  .grid-wrap { overflow-x: auto; padding-bottom: 6px; }
+  .grid-inner { display: inline-block; }
+  .month-row { display: flex; margin-left: 20px; margin-bottom: 4px; }
+  .month-cell { width: 11px; margin-right: 2px; flex-shrink: 0; }
+  .month-lbl { font-family: 'DM Mono', monospace; font-size: 7px; color: #28294a; white-space: nowrap; display: block; }
+  .grid-body { display: flex; }
+  .day-labels { display: flex; flex-direction: column; gap: 2px; width: 18px; flex-shrink: 0; }
+  .day-lbl { height: 11px; font-family: 'DM Mono', monospace; font-size: 7px; color: #20213a; display: flex; align-items: center; }
+  .grid-weeks { display: flex; gap: 2px; }
+  .grid-week { display: flex; flex-direction: column; gap: 2px; }
+  .grid-dot { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; transition: transform 0.1s; cursor: default; }
+  .grid-dot.clickable { cursor: pointer; }
+  .grid-dot.clickable:hover { transform: scale(1.6); }
+
+  /* Stats */
+  .stats-grid { margin-top: 20px; display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .stat-card { background: #0d0e1b; border: 1px solid #14152a; border-radius: 9px; padding: 12px 8px; text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 800; font-family: 'DM Mono', monospace; color: #eef0ff; line-height: 1; }
+  .stat-lbl { font-size: 8px; font-family: 'DM Mono', monospace; color: #28294a; letter-spacing: 1px; margin-top: 4px; text-transform: uppercase; }
+  .hitrate-card { margin-top: 12px; background: #0d0e1b; border: 1px solid #14152a; border-radius: 9px; padding: 12px 15px; }
+  .hitrate-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .hitrate-lbl { font-family: 'DM Mono', monospace; font-size: 9px; color: #4a4b72; letter-spacing: 2px; }
+  .hitrate-pct { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; }
+
+  /* Modals */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
+  .modal-sheet { background: #0a0b18; border: 1px solid #14152a; border-radius: 18px 18px 0 0; width: 100%; max-width: 480px; }
+  .modal-header { padding: 18px 20px 14px; border-bottom: 1px solid #14152a; display: flex; justify-content: space-between; align-items: center; }
+  .modal-sub { font-family: 'DM Mono', monospace; font-size: 9px; color: #4a4b72; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 3px; }
+  .modal-title { font-size: 16px; font-weight: 700; color: #eef0ff; }
+  .close-btn { background: #0d0e1b; border: 1px solid #14152a !important; color: #4a4b72; width: 30px; height: 30px; border-radius: 7px; font-size: 16px; line-height: 1; }
+  .modal-body { padding: 16px 20px; }
+  .modal-footer { padding: 14px 20px; border-top: 1px solid #14152a; }
+
+  /* Manage modal */
+  .manage-sheet { max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+  .manage-list { overflow-y: auto; flex: 1; padding: 14px 20px; }
+  .habit-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #0d0e1b; border: 1px solid #14152a; border-radius: 9px; margin-bottom: 5px; }
+  .habit-item-info { flex: 1; min-width: 0; }
+  .habit-item-label { font-size: 12px; font-weight: 500; color: #9098c8; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .habit-item-tags { display: flex; gap: 5px; align-items: center; }
+  .tag { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 1px; padding: 2px 5px; border-radius: 3px; }
+  .tag-cat { color: #4a4b72; background: #0e0f20; }
+  .tag-bonus { color: #0d9488; background: #061a18; }
+  .edit-btn { background: #101228; border: 1px solid #14152a !important; color: #5060a0; width: 28px; height: 28px; border-radius: 6px; font-size: 12px; }
+  .del-btn  { background: #180e0e; border: 1px solid #2a1010 !important; color: #6b2020; width: 28px; height: 28px; border-radius: 6px; font-size: 12px; }
+  .add-btn-dashed { width: 100%; margin-top: 4px; padding: 10px; background: transparent; border: 1px dashed #14152a !important; border-radius: 9px; color: #4a4b72; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .save-btn { width: 100%; padding: 12px; background: linear-gradient(135deg,#1e2f6a,#162255); border: 1px solid #2a3a80 !important; border-radius: 9px; color: #a0b0f0; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; font-weight: 500; }
+
+  /* Form block inside manage */
+  .form-block { background: #111228; border: 1px solid #1e1f38; border-radius: 9px; padding: 12px 13px; margin-bottom: 6px; }
+  .form-input { width: 100%; background: #0d0e1b; border: 1px solid #1e1f38; border-radius: 6px; padding: 8px 10px; color: #eef0ff; font-family: 'Syne', sans-serif; font-size: 13px; margin-bottom: 8px; }
+  .cat-pills { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
+  .cat-pill { padding: 4px 9px; border-radius: 5px; border: 1px solid #14152a; background: #0d0e1b; color: #4a4b72; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 1px; cursor: pointer; }
+  .cat-pill.active { border-color: #3d5ce0; background: #1a1f40; color: #8899ee; }
+  .toggle-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .toggle { width: 28px; height: 16px; border-radius: 99px; cursor: pointer; transition: background 0.2s; background: #1a1a2e; border: 1px solid #14152a; position: relative; flex-shrink: 0; }
+  .toggle.on { background: #0d9488; border-color: #0d9488; }
+  .toggle-knob { position: absolute; top: 2px; left: 2px; width: 10px; height: 10px; border-radius: 99px; background: #fff; transition: left 0.2s; }
+  .toggle.on .toggle-knob { left: 14px; }
+  .toggle-lbl { font-family: 'DM Mono', monospace; font-size: 9px; color: #4a4b72; letter-spacing: 1px; }
+  .form-btns { display: flex; gap: 6px; }
+  .form-save { flex: 1; padding: 7px; background: #162840; border: 1px solid #1e3a5f !important; border-radius: 6px; color: #60a5fa; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; }
+  .form-cancel { padding: 7px 12px; background: #0d0e1b; border: 1px solid #14152a !important; border-radius: 6px; color: #4a4b72; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; }
+
+  /* Sync modal */
+  .sync-instructions { background: #060714; border: 1px solid #0d0e22; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; font-family: 'DM Mono', monospace; font-size: 8px; color: #32334a; letter-spacing: 0.5px; line-height: 1.8; }
+  .field-lbl { font-family: 'DM Mono', monospace; font-size: 8px; color: #4a4b72; letter-spacing: 2px; margin-bottom: 5px; text-transform: uppercase; }
+  .field-input { width: 100%; background: #0d0e1b; border: 1px solid #14152a; border-radius: 7px; padding: 9px 11px; color: #eef0ff; font-family: 'DM Mono', monospace; font-size: 11px; margin-bottom: 10px; }
+  .sync-status { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; margin-bottom: 12px; }
+  .bin-display { background: #060714; border: 1px solid #0e0f24; border-radius: 7px; padding: 8px 11px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .bin-id-lbl { font-family: 'DM Mono', monospace; font-size: 7px; color: #252545; letter-spacing: 2px; margin-bottom: 2px; }
+  .bin-id-val { font-family: 'DM Mono', monospace; font-size: 10px; color: #5060a0; letter-spacing: 0.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .copy-btn { background: #0e0f24; border: 1px solid #14152a !important; color: #3a3b58; padding: 5px 8px; border-radius: 5px; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 1px; flex-shrink: 0; }
+  .connect-btn { flex: 1; padding: 11px; background: linear-gradient(135deg,#1e2f6a,#162255); border: 1px solid #2a3a80 !important; border-radius: 9px; color: #a0b0f0; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; }
+  .connect-btn:disabled { background: #0e0f20; color: #252545; }
+  .clear-btn { padding: 11px 14px; background: #180e0e; border: 1px solid #2a1010 !important; border-radius: 9px; color: #6b2020; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; }
+  .sync-btns { display: flex; gap: 8px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<!-- Modals (hidden by default) -->
+<div id="sync-modal" class="modal-overlay" style="display:none">
+  <div class="modal-sheet" style="padding-bottom:32px">
+    <div class="modal-header">
+      <div>
+        <div class="modal-sub">Cross-device</div>
+        <div class="modal-title">JSONBin Sync</div>
+      </div>
+      <button class="close-btn" id="sync-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="sync-instructions">
+        1. Sign up free at <span style="color:#3d4580">jsonbin.io</span><br>
+        2. Copy <span style="color:#5060a0">Master Key</span> from Account → API Keys<br>
+        3. <span style="color:#22c55e">First device:</span> paste Master Key, leave Bin ID empty → Connect<br>
+        4. <span style="color:#60a5fa">Other devices:</span> paste Master Key + Bin ID → Connect
+      </div>
+      <div class="field-lbl">Master Key</div>
+      <input type="password" id="sync-mk" class="field-input" placeholder="$2a$10$…"/>
+      <div class="field-lbl">Bin ID <span style="color:#1e1f38">— leave blank on first device</span></div>
+      <input type="text" id="sync-bin" class="field-input" placeholder="6123abc…"/>
+      <div id="sync-status" class="sync-status" style="display:none"></div>
+      <div id="bin-display" class="bin-display" style="display:none">
+        <div style="min-width:0">
+          <div class="bin-id-lbl">CURRENT BIN ID</div>
+          <div id="bin-id-val" class="bin-id-val"></div>
+        </div>
+        <button class="copy-btn" id="copy-bin-btn">COPY</button>
+      </div>
+      <div class="sync-btns">
+        <button class="connect-btn" id="sync-connect-btn">CONNECT</button>
+        <button class="clear-btn" id="sync-clear-btn" style="display:none">CLEAR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="manage-modal" class="modal-overlay" style="display:none">
+  <div class="modal-sheet manage-sheet">
+    <div class="modal-header" style="flex-shrink:0">
+      <div>
+        <div class="modal-sub">Configure</div>
+        <div class="modal-title">Manage Habits</div>
+      </div>
+      <button class="close-btn" id="manage-close">✕</button>
+    </div>
+    <div class="manage-list" id="manage-list"></div>
+    <div class="modal-footer" style="flex-shrink:0">
+      <button class="save-btn" id="manage-save">SAVE CHANGES</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Constants ──────────────────────────────────────────────────────────────────
+const YEAR      = 2026;
+const START     = new Date(YEAR, 3, 16);
+const GRACE_END = new Date(YEAR, 4, 15);
+const TARGET    = 5;
+const JB_BASE   = 'https://api.jsonbin.io/v3';
+
+const DEFAULT_HABITS = [
+  { id:'acv',        cat:'Morning Anchor', label:'ACV + Water before breakfast',        bonus:false },
+  { id:'logfood',    cat:'Health Basics',  label:'Log food after eating',               bonus:false },
+  { id:'addgood',    cat:'Health Basics',  label:'Add 1 good thing to meals',           bonus:false },
+  { id:'drinkwater', cat:'Health Basics',  label:'Drink water before meals',            bonus:false },
+  { id:'movement',   cat:'Movement',       label:'20 min workout  ·  or  ·  5 min min', bonus:false },
+  { id:'social',     cat:'Social',         label:'1 small interaction',                 bonus:false },
+  { id:'walk',       cat:'Bonus',          label:'10 min walk',                         bonus:true  },
+  { id:'stretch',    cat:'Bonus',          label:'Stretch / mobility',                  bonus:true  },
+  { id:'meals',      cat:'Bonus',          label:'Eat mostly default meals',            bonus:true  },
+];
+
+const CAT_ORDER    = ['Morning Anchor','Health Basics','Movement','Social','Bonus','Custom'];
+const CAT_ICONS    = {'Morning Anchor':'☀️','Health Basics':'🥗','Movement':'⚡','Social':'💬','Bonus':'⭐','Custom':'✦'};
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ── State ──────────────────────────────────────────────────────────────────────
+let state = {
+  data:   {},
+  habits: JSON.parse(JSON.stringify(DEFAULT_HABITS)),
+  sel:    '',
+  tab:    'today',
+  syncSt: 'idle',   // idle | syncing | ok | error
+};
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function fmt(d)   { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function parse(k) { const [y,m,d]=k.split('-').map(Number); return new Date(y,m-1,d); }
+function now0()   { const d=new Date(); d.setHours(0,0,0,0); return d; }
+function uid()    { return Math.random().toString(36).slice(2,8); }
+function ls(k)    { try{return localStorage.getItem(k);}catch{return null;} }
+function lsSet(k,v){ try{localStorage.setItem(k,v);}catch{} }
+function coreHabits() { return state.habits.filter(h=>!h.bonus); }
+
+function dotColor(k) {
+  const d=parse(k), t=now0();
+  const core=coreHabits();
+  if (d<START)  return '#0c0c1e';
+  if (d>t)      return '#13132b';
+  const day=state.data[k];
+  if (!day||!Object.keys(day).length) return d<=GRACE_END ? '#6d28d9' : '#2c0f0f';
+  return core.filter(h=>day[h.id]).length >= TARGET ? '#15803d' : '#b91c1c';
+}
+
+function buildWeeks() {
+  const offset=(new Date(YEAR,0,1).getDay()+6)%7;
+  const weeks=[]; let week=Array(offset).fill(null);
+  for (let d=new Date(YEAR,0,1); d.getFullYear()===YEAR; d.setDate(d.getDate()+1)) {
+    week.push(fmt(new Date(d)));
+    if (week.length===7) { weeks.push([...week]); week=[]; }
+  }
+  if (week.length) { while(week.length<7) week.push(null); weeks.push(week); }
+  return weeks;
+}
+
+function currentWeekKeys() {
+  const t=now0(), dow=(t.getDay()+6)%7;
+  const mon=new Date(t); mon.setDate(t.getDate()-dow);
+  return Array.from({length:7},(_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return fmt(d); });
+}
+
+function calcStreak() {
+  const core=coreHabits(); let s=0; const d=new Date(now0());
+  while(true){ const k=fmt(d),day=state.data[k]; if(!day||core.filter(h=>day[h.id]).length<TARGET) break; s++; d.setDate(d.getDate()-1); }
+  return s;
+}
+
+function activeCats() {
+  const seen=new Set(); const out=[];
+  CAT_ORDER.forEach(c=>{ if(state.habits.some(h=>h.cat===c)){ seen.add(c); out.push(c); } });
+  state.habits.forEach(h=>{ if(!seen.has(h.cat)){ seen.add(h.cat); out.push(h.cat); } });
+  return out;
+}
+
+// ── JSONBin ────────────────────────────────────────────────────────────────────
+async function jbCreate(mk, payload) {
+  const r=await fetch(`${JB_BASE}/b`,{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':mk,'X-Bin-Name':'atomic-habits-2026'},body:JSON.stringify(payload)});
+  if(!r.ok) throw new Error(`Create failed: ${r.status}`);
+  return (await r.json()).metadata.id;
+}
+async function jbRead(mk, binId) {
+  const r=await fetch(`${JB_BASE}/b/${binId}/latest`,{headers:{'X-Master-Key':mk}});
+  if(!r.ok) throw new Error(`Read failed: ${r.status}`);
+  return (await r.json()).record;
+}
+async function jbWrite(mk, binId, payload) {
+  const r=await fetch(`${JB_BASE}/b/${binId}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':mk},body:JSON.stringify(payload)});
+  if(!r.ok) throw new Error(`Write failed: ${r.status}`);
+}
+
+let saveTimer=null;
+function scheduleSave() {
+  lsSet('ah2026_data',   JSON.stringify(state.data));
+  lsSet('ah2026_habits', JSON.stringify(state.habits));
+  const mk=ls('ah_mk'), bin=ls('ah_bin');
+  if (!mk||!bin) return;
+  clearTimeout(saveTimer);
+  setSyncSt('syncing');
+  saveTimer=setTimeout(async()=>{
+    try { await jbWrite(mk,bin,{data:state.data,habits:state.habits}); setSyncSt('ok'); }
+    catch { setSyncSt('error'); }
+  },1200);
+}
+
+function setSyncSt(st) {
+  state.syncSt=st;
+  const dot=document.getElementById('sync-dot');
+  if (!dot) return;
+  const map={ok:['●','#22c55e'],syncing:['◌','#f59e0b'],error:['✕','#ef4444'],idle:['○','#252545']};
+  const [txt,col]=map[st]||map.idle;
+  dot.textContent=txt; dot.style.color=col;
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────────
+function render() {
+  const todayK    = fmt(now0());
+  const core      = coreHabits();
+  const dayData   = state.data[state.sel]||{};
+  const coreScore = core.filter(h=>dayData[h.id]).length;
+  const bonusScore= state.habits.filter(h=>h.bonus&&dayData[h.id]).length;
+  const strk      = calcStreak();
+  const wd        = currentWeekKeys();
+  const wScore    = wd.filter(k=>{ const dd=state.data[k]; return dd&&core.filter(h=>dd[h.id]).length>=TARGET; }).length;
+  const isToday   = state.sel===todayK;
+
+  const scoreColor = coreScore>=TARGET?'#22c55e':coreScore>=3?'#f59e0b':'#ef4444';
+  const scorePct   = (coreScore/Math.max(core.length,1))*100;
+  const scoreMsg   = coreScore>=TARGET
+    ? `✓ TARGET HIT${bonusScore>0?`  ·  +${bonusScore} bonus win${bonusScore>1?'s':''}`:''}`
+    : `${TARGET-coreScore} more to hit target`;
+
+  const weekStatus = wScore>=7?'🔥 ELITE':wScore>=5?'✔ WINNING':`${wScore}/7 days`;
+  const wColor     = wScore>=5?'#22c55e':wScore>=3?'#f59e0b':'#ef4444';
+  const selDate    = parse(state.sel);
+  const syncDot    = {ok:'●',syncing:'◌',error:'✕',idle:'○'}[state.syncSt];
+  const syncCol    = {ok:'#22c55e',syncing:'#f59e0b',error:'#ef4444',idle:'#252545'}[state.syncSt];
+
+  // Week strip HTML
+  const weekDayLabels = ['M','T','W','T','F','S','S'];
+  const wdHTML = wd.map((k,i)=>{
+    const isT=k===todayK, dd=state.data[k];
+    const score=dd?core.filter(h=>dd[h.id]).length:0;
+    const color=dotColor(k);
+    const tick=dd?`<span class="wd-tick">${score>=TARGET?'✓':'×'}</span>`:'';
+    return `<div class="week-day">
+      <div class="wd-label" style="color:${isT?'#6878c0':'#202038'}">${weekDayLabels[i]}</div>
+      <div class="wd-bar" data-nav="${k}" style="background:${color};border-color:${isT?'#3555b0':'transparent'}">${tick}</div>
+    </div>`;
+  }).join('');
+
+  // Habits HTML
+  const habitsHTML = activeCats().map(cat=>{
+    const catHabits=state.habits.filter(h=>h.cat===cat);
+    if(!catHabits.length) return '';
+    const isAllBonus=catHabits.every(h=>h.bonus);
+    const rows=catHabits.map(h=>{
+      const on=!!dayData[h.id];
+      const rowCls=on?(h.bonus?'on-bonus':'on-core'):'';
+      const cbCls=on?(h.bonus?'on-bonus':'on-core'):'';
+      const lblCls=on?(h.bonus?'on-bonus':'on-core'):'';
+      return `<div class="habit-row ${rowCls}" data-toggle="${h.id}">
+        <div class="habit-cb ${cbCls}"><span class="habit-cb-tick">✓</span></div>
+        <span class="habit-label ${lblCls}">${h.label}</span>
+      </div>`;
+    }).join('');
+    return `<div class="cat-block">
+      <div class="cat-header">
+        <span class="cat-icon">${CAT_ICONS[cat]||'•'}</span>
+        <span class="cat-name">${cat}</span>
+        ${isAllBonus?'<span class="cat-sub">OPTIONAL WINS</span>':''}
+      </div>
+      <div class="habit-list">${rows}</div>
+    </div>`;
+  }).join('');
+
+  // Year grid HTML
+  const weeks=buildWeeks();
+  const mPos=[];let lastM=-1;
+  weeks.forEach((w,i)=>{ const f=w.find(Boolean); if(f){const m=parse(f).getMonth(); if(m!==lastM){mPos.push({m,i});lastM=m;}} });
+
+  const monthRowHTML=weeks.map((_,wi)=>{
+    const ml=mPos.find(p=>p.i===wi);
+    return `<div class="month-cell">${ml?`<span class="month-lbl">${MONTHS_SHORT[ml.m]}</span>`:''}</div>`;
+  }).join('');
+
+  const weeksHTML=weeks.map(week=>{
+    const dots=week.map(k=>{
+      if(!k) return '<div style="width:11px;height:11px"></div>';
+      const color=dotColor(k);
+      const isT=k===todayK;
+      const clickable=parse(k)>=START;
+      const ds=state.data[k]?core.filter(h=>state.data[k][h.id]).length:null;
+      const outline=isT?'outline:1.5px solid #4466e0;outline-offset:1px;':'';
+      const title=k+(ds!==null?` · ${ds}/${core.length} core`:' · no data');
+      return `<div class="grid-dot${clickable?' clickable':''}" style="background:${color};${outline}" ${clickable?`data-goto="${k}"`:''}title="${title}"></div>`;
+    }).join('');
+    return `<div class="grid-week">${dots}</div>`;
+  }).join('');
+
+  const tracked=Object.keys(state.data).filter(k=>{ const d=parse(k); return d>=START&&d<=now0(); });
+  const hits=tracked.filter(k=>core.filter(h=>state.data[k][h.id]).length>=TARGET);
+  const hitRate=tracked.length?Math.round((hits.length/tracked.length)*100):0;
+  const hrColor=tracked.length&&hits.length/tracked.length>=0.7?'#22c55e':'#f59e0b';
+
+  document.getElementById('app').innerHTML = `
+    <div class="hdr">
+      <div class="hdr-top">
+        <div>
+          <div class="hdr-label">2026 · Atomic Habits</div>
+          <div class="hdr-title">Daily Non-Negotiables</div>
+        </div>
+        <div class="hdr-right">
+          <button class="icon-btn" id="sync-btn" style="color:${syncCol};font-size:13px" title="Sync settings">${syncDot}</button>
+          <button class="icon-btn" id="manage-btn">⚙</button>
+          <div style="text-align:right">
+            <div class="streak-num" style="color:${strk>0?'#22c55e':'#252545'}">${strk}</div>
+            <div class="streak-lbl">DAY STREAK</div>
+          </div>
+        </div>
+      </div>
+      <div class="week-strip">
+        <div class="week-days">${wdHTML}</div>
+        <div class="week-status">THIS WEEK: <span style="color:${wColor}">${weekStatus}</span> <span style="color:#1c1d38;margin-left:10px">5+ = WIN · 7 = ELITE</span></div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn${state.tab==='today'?' active':''}" data-tab="today">TODAY</button>
+      <button class="tab-btn${state.tab==='year'?' active':''}" data-tab="year">YEAR</button>
+    </div>
+
+    <div id="panel-today" class="tab-panel${state.tab==='today'?' active':''}">
+      <div class="date-nav">
+        <button class="nav-btn" id="prev-day">‹</button>
+        <div>
+          <div class="date-label">${isToday?'TODAY · ':''}${selDate.toLocaleDateString('en-GB',{weekday:'long'}).toUpperCase()}</div>
+          <div class="date-full">${selDate.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
+        </div>
+        <button class="nav-btn" id="next-day">›</button>
+      </div>
+
+      <div class="score-bar">
+        <div class="score-top">
+          <span class="score-lbl">CORE HABITS</span>
+          <span><span class="score-num" style="color:${scoreColor}">${coreScore}</span><span class="score-den">/${core.length}</span></span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:${scorePct}%;background:${scoreColor}"></div></div>
+        <div class="score-msg" style="color:${coreScore>=TARGET?'#22c55e':'#2c2d48'}">${scoreMsg}</div>
+      </div>
+
+      ${habitsHTML}
+      <div class="rule-bar">Miss a day → Don't miss two</div>
+    </div>
+
+    <div id="panel-year" class="tab-panel${state.tab==='year'?' active':''}">
+      <div class="year-title">2026 · Year at a Glance</div>
+      <div class="legend">
+        ${[['#15803d','Hit target'],['#b91c1c','Missed'],['#6d28d9','Apr 16 – May 15'],['#2c0f0f','Not logged'],['#13132b','Upcoming'],['#0c0c1e','Pre-start']].map(([c,l])=>`
+          <div class="legend-item"><div class="legend-dot" style="background:${c}"></div><span class="legend-lbl">${l}</span></div>
+        `).join('')}
+      </div>
+      <div class="grid-wrap">
+        <div class="grid-inner">
+          <div class="month-row">${monthRowHTML}</div>
+          <div class="grid-body">
+            <div class="day-labels">${['M','','W','','F','','S'].map(d=>`<div class="day-lbl">${d}</div>`).join('')}</div>
+            <div class="grid-weeks">${weeksHTML}</div>
+          </div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num">${tracked.length}</div><div class="stat-lbl">Days Tracked</div></div>
+        <div class="stat-card"><div class="stat-num">${hits.length}</div><div class="stat-lbl">Target Hit</div></div>
+        <div class="stat-card"><div class="stat-num">${strk}</div><div class="stat-lbl">Streak</div></div>
+      </div>
+      ${tracked.length?`
+      <div class="hitrate-card">
+        <div class="hitrate-top">
+          <span class="hitrate-lbl">HIT RATE</span>
+          <span class="hitrate-pct" style="color:${hrColor}">${hitRate}%</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:${hitRate}%;background:${hrColor}"></div></div>
+      </div>`:''}
+    </div>
+  `;
+
+  attachListeners();
+}
+
+function attachListeners() {
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{ state.tab=b.dataset.tab; render(); }));
+
+  // Date nav
+  document.getElementById('prev-day')?.addEventListener('click',()=>shiftDay(-1));
+  document.getElementById('next-day')?.addEventListener('click',()=>shiftDay(1));
+
+  // Week day click
+  document.querySelectorAll('.wd-bar[data-nav]').forEach(el=>el.addEventListener('click',()=>{
+    state.sel=el.dataset.nav; state.tab='today'; render();
+  }));
+
+  // Toggle habits
+  document.querySelectorAll('.habit-row[data-toggle]').forEach(el=>el.addEventListener('click',()=>{
+    const id=el.dataset.toggle;
+    if(!state.data[state.sel]) state.data[state.sel]={};
+    state.data[state.sel][id]=!state.data[state.sel][id];
+    scheduleSave(); render();
+  }));
+
+  // Grid dot click
+  document.querySelectorAll('.grid-dot[data-goto]').forEach(el=>el.addEventListener('click',()=>{
+    state.sel=el.dataset.goto; state.tab='today'; render();
+  }));
+
+  // Sync button
+  document.getElementById('sync-btn')?.addEventListener('click',openSyncModal);
+
+  // Manage button
+  document.getElementById('manage-btn')?.addEventListener('click',openManageModal);
+}
+
+function shiftDay(n) {
+  const d=parse(state.sel); d.setDate(d.getDate()+n);
+  const k=fmt(d);
+  if(k>=fmt(START)&&k<=`${YEAR}-12-31`) { state.sel=k; render(); }
+}
+
+// ── Sync Modal ─────────────────────────────────────────────────────────────────
+function openSyncModal() {
+  const modal=document.getElementById('sync-modal');
+  document.getElementById('sync-mk').value  = ls('ah_mk')||'';
+  document.getElementById('sync-bin').value = ls('ah_bin')||'';
+  document.getElementById('sync-status').style.display='none';
+  refreshBinDisplay();
+  modal.style.display='flex';
+}
+function closeSyncModal() { document.getElementById('sync-modal').style.display='none'; }
+function refreshBinDisplay() {
+  const bin=ls('ah_bin');
+  const disp=document.getElementById('bin-display');
+  const clr=document.getElementById('sync-clear-btn');
+  if(bin){ document.getElementById('bin-id-val').textContent=bin; disp.style.display='flex'; if(clr)clr.style.display=''; }
+  else   { disp.style.display='none'; if(clr)clr.style.display='none'; }
+}
+
+document.getElementById('sync-close').addEventListener('click', closeSyncModal);
+document.getElementById('sync-modal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeSyncModal(); });
+
+document.getElementById('copy-bin-btn').addEventListener('click',()=>{
+  const v=ls('ah_bin'); if(v) navigator.clipboard?.writeText(v);
+});
+
+document.getElementById('sync-connect-btn').addEventListener('click', async()=>{
+  const mk  = document.getElementById('sync-mk').value.trim();
+  const bin = document.getElementById('sync-bin').value.trim();
+  const statusEl=document.getElementById('sync-status');
+  const btn=document.getElementById('sync-connect-btn');
+  function setStatus(msg,col){ statusEl.textContent=msg; statusEl.style.color=col; statusEl.style.display='block'; }
+  if(!mk){ setStatus('⚠ Enter your Master Key first.','#f59e0b'); return; }
+  btn.disabled=true; btn.textContent='WORKING…';
+  try {
+    let bid=bin;
+    if(!bid){ setStatus('Creating new bin…','#5060a0'); bid=await jbCreate(mk,{data:{},habits:DEFAULT_HABITS}); document.getElementById('sync-bin').value=bid; setStatus(`✓ Bin created! ID: ${bid}`,'#22c55e'); }
+    else    { setStatus('Verifying bin…','#5060a0'); await jbRead(mk,bid); setStatus('✓ Connected!','#22c55e'); }
+    lsSet('ah_mk',mk); lsSet('ah_bin',bid);
+    refreshBinDisplay(); setSyncSt('ok'); render();
+    scheduleSave();
+    setTimeout(closeSyncModal, 900);
+  } catch(e){ setStatus(`✕ ${e.message}`,'#ef4444'); }
+  btn.disabled=false; btn.textContent='CONNECT';
+});
+
+document.getElementById('sync-clear-btn').addEventListener('click',()=>{
+  lsSet('ah_mk',''); lsSet('ah_bin','');
+  refreshBinDisplay(); setSyncSt('idle'); render();
+  closeSyncModal();
+});
+
+// ── Manage Modal ───────────────────────────────────────────────────────────────
+let manageDraft = [];
+let editingId   = null;
+let addingNew   = false;
+
+function openManageModal() {
+  manageDraft = state.habits.map(h=>({...h}));
+  editingId=null; addingNew=false;
+  renderManageList();
+  document.getElementById('manage-modal').style.display='flex';
+}
+function closeManageModal() { document.getElementById('manage-modal').style.display='none'; }
+
+document.getElementById('manage-close').addEventListener('click', closeManageModal);
+document.getElementById('manage-modal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeManageModal(); });
+
+document.getElementById('manage-save').addEventListener('click',()=>{
+  if(editingId||addingNew) commitForm();
+  state.habits=manageDraft.map(h=>({...h}));
+  scheduleSave(); render(); closeManageModal();
+});
+
+function renderManageList() {
+  const cats=[...new Set([...CAT_ORDER,...manageDraft.map(h=>h.cat)])];
+  const el=document.getElementById('manage-list');
+  let html='';
+
+  manageDraft.forEach(h=>{
+    if(h.id===editingId) {
+      html+=buildFormBlock(h,'SAVE',h.id);
+    } else {
+      html+=`<div class="habit-item" data-hid="${h.id}">
+        <div class="habit-item-info">
+          <div class="habit-item-label">${h.label}</div>
+          <div class="habit-item-tags">
+            <span class="tag tag-cat">${h.cat}</span>
+            ${h.bonus?'<span class="tag tag-bonus">BONUS</span>':''}
+          </div>
+        </div>
+        <button class="edit-btn" data-edit="${h.id}">✎</button>
+        <button class="del-btn"  data-del="${h.id}">✕</button>
+      </div>`;
+    }
+  });
+
+  if(addingNew) {
+    html+=buildFormBlock(null,'ADD HABIT','__new__');
+  } else {
+    html+=`<button class="add-btn-dashed" id="start-add"><span style="font-size:14px;line-height:1">+</span> ADD HABIT</button>`;
+  }
+
+  el.innerHTML=html;
+
+  // Bind buttons
+  el.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ editingId=b.dataset.edit; addingNew=false; renderManageList(); setTimeout(()=>el.querySelector('input')?.focus(),50); }));
+  el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ manageDraft=manageDraft.filter(h=>h.id!==b.dataset.del); renderManageList(); }));
+  el.querySelector('#start-add')?.addEventListener('click',()=>{ addingNew=true; editingId=null; renderManageList(); setTimeout(()=>el.querySelector('input')?.focus(),50); });
+
+  // Form buttons
+  el.querySelectorAll('.form-save').forEach(b=>b.addEventListener('click',()=>commitForm()));
+  el.querySelectorAll('.form-cancel').forEach(b=>b.addEventListener('click',()=>{ editingId=null; addingNew=false; renderManageList(); }));
+  el.querySelectorAll('.cat-pill').forEach(p=>p.addEventListener('click',()=>{ el.querySelectorAll('.cat-pill').forEach(x=>x.classList.remove('active')); p.classList.add('active'); }));
+  el.querySelectorAll('.toggle').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+  el.querySelectorAll('.form-input').forEach(inp=>inp.addEventListener('keydown',e=>{ if(e.key==='Enter') commitForm(); }));
+}
+
+function buildFormBlock(h, btnLabel) {
+  const cats=[...new Set([...CAT_ORDER,...manageDraft.map(x=>x.cat)])];
+  const currentCat = h?.cat||'Custom';
+  const isBonus = h?.bonus||false;
+  const pills=cats.map(c=>`<button type="button" class="cat-pill${c===currentCat?' active':''}" data-cat="${c}">${c}</button>`).join('');
+  return `<div class="form-block">
+    <input class="form-input" type="text" placeholder="Habit label…" value="${h?h.label:''}"/>
+    <div class="cat-pills">${pills}</div>
+    <div class="toggle-row">
+      <div class="toggle${isBonus?' on':''}"><div class="toggle-knob"></div></div>
+      <span class="toggle-lbl">BONUS (optional)</span>
+    </div>
+    <div class="form-btns">
+      <button type="button" class="form-save">${btnLabel}</button>
+      <button type="button" class="form-cancel">CANCEL</button>
+    </div>
+  </div>`;
+}
+
+function commitForm() {
+  const el=document.getElementById('manage-list');
+  const label=el.querySelector('.form-input')?.value.trim();
+  if(!label) return;
+  const activePill=el.querySelector('.cat-pill.active');
+  const cat=activePill?.dataset.cat||'Custom';
+  const bonus=el.querySelector('.toggle')?.classList.contains('on')||false;
+  if(editingId) {
+    manageDraft=manageDraft.map(h=>h.id===editingId?{...h,label,cat,bonus}:h);
+    editingId=null;
+  } else if(addingNew) {
+    manageDraft.push({id:uid(),label,cat,bonus});
+    addingNew=false;
+  }
+  renderManageList();
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+async function init() {
+  state.sel = fmt(now0());
+  const mk=ls('ah_mk'), bin=ls('ah_bin');
+
+  if(mk&&bin) {
+    setSyncSt('syncing');
+    try {
+      const remote=await jbRead(mk,bin);
+      if(remote?.data)   state.data   = remote.data;
+      if(remote?.habits) state.habits = remote.habits;
+      setSyncSt('ok');
+    } catch { setSyncSt('error'); }
+  } else {
+    const d=ls('ah2026_data');   if(d) state.data   = JSON.parse(d);
+    const h=ls('ah2026_habits'); if(h) state.habits = JSON.parse(h);
+  }
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
